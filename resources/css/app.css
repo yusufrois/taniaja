@@ -1,0 +1,160 @@
+@import "tailwindcss";
+
+/*
+ * Dark "glassmorphism" theme adopted from the LadangWohIjo Autodosing
+ * (LWC100) dashboard's CSS — same color tokens (--lw-*), same .glass
+ * card treatment, same input/button styling — so TaniAja visually
+ * matches the rest of the LadangWohIjo product family instead of
+ * looking like an unrelated app.
+ */
+:root {
+    --lw-bg: #07110d;
+    --lw-panel: rgba(15, 32, 24, .88);
+    --lw-panel-2: rgba(20, 43, 32, .78);
+    --lw-border: rgba(74, 222, 128, .15);
+    --lw-border-strong: rgba(74, 222, 128, .28);
+    --lw-green: #39d353;
+    --lw-green-2: #22c55e;
+    --lw-text: #f1f8f4;
+    --lw-muted: #91a69a;
+    --lw-danger: #fb7185;
+    --lw-warning: #fbbf24;
+    --lw-radius: 16px;
+}
+
+html {
+    background: var(--lw-bg);
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    min-height: 100vh;
+    background:
+        radial-gradient(circle at 15% 0%, rgba(34, 197, 94, .10), transparent 32%),
+        radial-gradient(circle at 90% 10%, rgba(16, 185, 129, .07), transparent 28%),
+        var(--lw-bg);
+    color: var(--lw-text);
+    font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    letter-spacing: .005em;
+}
+
+/* Card / panel treatment — same class name as the Autodosing app */
+.glass {
+    background: linear-gradient(145deg, rgba(19, 42, 31, .90), rgba(9, 24, 17, .86));
+    border: 1px solid var(--lw-border);
+    border-radius: var(--lw-radius);
+    box-shadow: 0 12px 35px rgba(0, 0, 0, .18), inset 0 1px 0 rgba(255, 255, 255, .025);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    transition: border-color .18s;
+}
+.glass:hover {
+    border-color: var(--lw-border-strong);
+}
+
+.brand {
+    color: #7bea8d;
+    letter-spacing: -.025em;
+    text-shadow: 0 0 22px rgba(57, 211, 83, .12);
+}
+
+.lw-muted {
+    color: var(--lw-muted);
+}
+
+/* Primary action button — same neon-green gradient as the Autodosing app */
+.btn-primary {
+    background: linear-gradient(135deg, #4ade80, #22c55e);
+    color: #031008;
+    border: 1px solid rgba(167, 243, 208, .45);
+    box-shadow: 0 7px 22px rgba(34, 197, 94, .16);
+    border-radius: 12px;
+    font-weight: 600;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+}
+.btn-primary:hover:not(:disabled) {
+    background: linear-gradient(135deg, #86efac, #4ade80);
+    transform: translateY(-1px);
+}
+.btn-primary:disabled {
+    opacity: .5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: rgba(15, 32, 24, .85);
+    border: 1px solid rgba(148, 163, 184, .18);
+    color: #a9bdb0;
+    border-radius: 12px;
+    font-weight: 600;
+    transition: border-color .15s, color .15s;
+}
+.btn-secondary:hover {
+    border-color: rgba(74, 222, 128, .28);
+    color: #dff8e6;
+}
+
+.lw-input {
+    background: rgba(8, 22, 15, .92);
+    border: 1px solid rgba(148, 163, 184, .18);
+    color: #edf7f0;
+    border-radius: 12px;
+    min-height: 42px;
+    transition: border-color .18s, box-shadow .18s;
+}
+.lw-input:focus {
+    outline: none;
+    border-color: rgba(74, 222, 128, .65);
+    box-shadow: 0 0 0 3px rgba(34, 197, 94, .10), 0 0 20px rgba(34, 197, 94, .06);
+}
+.lw-input::placeholder {
+    color: #64748b;
+}
+
+.lw-label {
+    color: #8fa99a;
+    font-size: 11px;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    font-weight: 600;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.lw-error {
+    color: var(--lw-danger);
+}
+
+.lw-link {
+    color: #5ee878;
+}
+.lw-link:hover {
+    text-decoration: underline;
+}
+
+/* Nav tab strip — same class + styling as the Autodosing app's .tab-btn */
+.tab-btn {
+    min-height: 38px;
+    padding: 8px 15px;
+    border: 1px solid rgba(148, 163, 184, .15);
+    background: rgba(15, 32, 24, .85);
+    color: #a9bdb0;
+    border-radius: 11px;
+    font-size: 13px;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: border-color .15s, color .15s, background .15s, box-shadow .15s;
+}
+.tab-btn:hover {
+    border-color: rgba(74, 222, 128, .28);
+    color: #dff8e6;
+}
+.tab-btn.active {
+    background: linear-gradient(135deg, #22c55e, #16a34a);
+    color: #041009;
+    border-color: rgba(134, 239, 172, .55);
+    box-shadow: 0 5px 18px rgba(34, 197, 94, .18);
+}
