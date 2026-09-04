@@ -1,0 +1,316 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Platform manajemen greenhouse dan pertanian untuk mengelola modal, musim tanam, jadwal HST, biaya, panen, penjualan, HPP, dan laba. Dikembangkan oleh LadangWohIjo.">
+<title>AgroFlow — Manajemen Greenhouse & Pertanian | LadangWohIjo</title>
+<style>
+:root{
+  --bg:#0b120e; --bg2:#101a13; --panel:#142119; --panel2:#19281d;
+  --grass:#78a85a; --grass2:#a5c76e; --moss:#416d42;
+  --soil:#6b4931; --soil2:#8b6140; --cream:#f2ead8;
+  --muted:#a9b4a8; --line:rgba(211,226,202,.12);
+  --white:#fff; --danger:#c98269; --shadow:0 22px 70px rgba(0,0,0,.35);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:
+radial-gradient(circle at 85% 5%,rgba(92,132,66,.18),transparent 28%),
+radial-gradient(circle at 15% 35%,rgba(112,72,43,.12),transparent 25%),var(--bg);
+color:var(--cream);line-height:1.65;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+.container{width:min(1160px,92%);margin:auto}
+.nav{position:sticky;top:0;z-index:50;background:rgba(11,18,14,.82);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+.nav-inner{height:76px;display:flex;align-items:center;justify-content:space-between}
+.logo{display:flex;align-items:center;gap:11px;font-weight:800;letter-spacing:-.03em}
+.logo-mark{width:39px;height:39px;border-radius:12px;background:linear-gradient(145deg,var(--grass2),var(--moss));display:grid;place-items:center;color:#102014;box-shadow:0 7px 25px rgba(120,168,90,.2)}
+.logo small{display:block;color:var(--muted);font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase}
+.nav-links{display:flex;gap:27px;color:#c4cdc2;font-size:14px}
+.nav-links a:hover{color:var(--grass2)}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;padding:12px 18px;border-radius:12px;border:1px solid var(--line);font-weight:700;font-size:14px;transition:.2s}
+.btn-primary{background:var(--grass);color:#0d180f;border-color:transparent;box-shadow:0 10px 28px rgba(120,168,90,.18)}
+.btn-primary:hover{transform:translateY(-2px);background:var(--grass2)}
+.btn-ghost:hover{background:rgba(255,255,255,.05)}
+.hero{padding:92px 0 70px;position:relative}
+.hero:after{content:"";position:absolute;right:-180px;top:50px;width:470px;height:470px;border-radius:50%;background:radial-gradient(circle,rgba(120,168,90,.14),transparent 66%);pointer-events:none}
+.badge{display:inline-flex;align-items:center;gap:8px;border:1px solid rgba(165,199,110,.24);background:rgba(65,109,66,.14);color:var(--grass2);padding:7px 11px;border-radius:999px;font-size:12px;font-weight:700;margin-bottom:22px}
+.dot{width:7px;height:7px;border-radius:50%;background:var(--grass2);box-shadow:0 0 12px var(--grass2)}
+.hero-grid{display:grid;grid-template-columns:1fr .92fr;gap:62px;align-items:center}
+h1{font-size:clamp(42px,6vw,74px);line-height:1.02;letter-spacing:-.055em;max-width:760px}
+h1 span{color:var(--grass2)}
+.lead{font-size:18px;color:#b8c3b5;max-width:650px;margin:25px 0 30px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
+.hero-note{margin-top:22px;color:#7f8d80;font-size:12px}
+.mockup{background:linear-gradient(145deg,#17271b,#0f1812);border:1px solid rgba(165,199,110,.18);border-radius:22px;box-shadow:var(--shadow);padding:14px;transform:rotate(1.2deg)}
+.window{background:#0b120e;border-radius:14px;overflow:hidden;border:1px solid var(--line)}
+.window-top{height:38px;padding:0 13px;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--line)}
+.window-top i{width:7px;height:7px;border-radius:50%;background:#455247}
+.dash{padding:18px}
+.dash-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:17px}
+.dash-title{font-weight:800}.dash-sub{font-size:10px;color:#768276}
+.select{border:1px solid var(--line);border-radius:8px;padding:6px 9px;color:#aeb8aa;font-size:10px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.card{background:#132017;border:1px solid var(--line);border-radius:10px;padding:11px}
+.card small{display:block;color:#7f8b80;font-size:9px}.card b{display:block;font-size:16px;margin-top:4px}.up{color:#8fbf69;font-size:9px}
+.chart{height:105px;margin-top:10px;border:1px solid var(--line);border-radius:10px;padding:12px;position:relative;overflow:hidden}
+.chart-line{position:absolute;left:8%;right:7%;bottom:22%;height:45%;border-top:2px solid var(--grass2);transform:skewY(-10deg);box-shadow:0 -8px 30px rgba(165,199,110,.08)}
+.chart-line:after{content:"";position:absolute;left:0;right:0;top:15px;border-top:1px dashed rgba(255,255,255,.08)}
+.chart-label{font-size:9px;color:#6e796e}
+.section{padding:105px 0}
+.section.alt{background:rgba(255,255,255,.018);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.eyebrow{color:var(--grass2);font-size:12px;font-weight:800;text-transform:uppercase;letter-spacing:.16em;margin-bottom:13px}
+.section h2{font-size:clamp(30px,4vw,48px);line-height:1.1;letter-spacing:-.04em;max-width:760px}
+.section-intro{color:var(--muted);max-width:760px;margin-top:16px}
+.feature-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:15px;margin-top:42px}
+.feature{background:linear-gradient(145deg,rgba(25,40,29,.9),rgba(16,27,20,.9));border:1px solid var(--line);padding:25px;border-radius:17px}
+.icon{width:43px;height:43px;border-radius:12px;background:rgba(120,168,90,.13);display:grid;place-items:center;font-size:20px;margin-bottom:18px}
+.feature h3{font-size:17px;margin-bottom:8px}.feature p{font-size:13px;color:#9faa9e}
+.process{display:grid;grid-template-columns:1.1fr .9fr;gap:55px;align-items:center;margin-top:48px}
+.steps{display:grid;gap:13px}
+.step{display:grid;grid-template-columns:42px 1fr;gap:14px;padding:18px;border:1px solid var(--line);border-radius:14px;background:rgba(18,31,21,.72)}
+.num{width:36px;height:36px;border-radius:10px;background:var(--soil);display:grid;place-items:center;font-weight:800;color:#f4dfc6}
+.step h3{font-size:15px}.step p{font-size:12px;color:#98a398;margin-top:3px}
+.flow{padding:28px;border-radius:20px;border:1px solid rgba(139,97,64,.3);background:linear-gradient(150deg,rgba(107,73,49,.2),rgba(25,40,29,.7))}
+.flow-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pill{padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#111d15;font-size:11px;font-weight:700}
+.arrow{color:var(--grass2)}
+.schedule{display:grid;grid-template-columns:.8fr 1.2fr;gap:40px;margin-top:45px}
+.timeline{border-left:2px solid rgba(120,168,90,.35);padding-left:25px;display:grid;gap:20px}
+.t-item{position:relative}.t-item:before{content:"";position:absolute;left:-33px;top:5px;width:12px;height:12px;border-radius:50%;background:var(--grass);box-shadow:0 0 0 5px #0b120e}
+.t-item strong{color:var(--grass2);font-size:12px}.t-item h4{font-size:14px;margin:3px 0}.t-item p{font-size:12px;color:#929d92}
+.schedule-panel{border:1px solid var(--line);border-radius:18px;background:#111c14;overflow:hidden}
+.panel-head{padding:18px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between}
+.table{width:100%;border-collapse:collapse;font-size:11px}
+.table th,.table td{padding:12px 15px;text-align:left;border-bottom:1px solid var(--line)}
+.table th{color:#7e897f;font-weight:600}.status{color:#91bc70}.status.warn{color:#d2a060}
+.finance{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:38px}
+.money{border-radius:15px;padding:20px;background:#142119;border:1px solid var(--line)}
+.money small{color:#859084;font-size:10px}.money b{font-size:21px;display:block;margin-top:7px}.money span{font-size:10px;color:#86ad6b}
+.accounting{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:15px}
+.account{padding:20px;border:1px solid var(--line);border-radius:15px;background:rgba(18,30,21,.75)}
+.account h3{font-size:15px;margin-bottom:11px}.row{display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px dashed rgba(255,255,255,.08);font-size:12px;color:#a1aba0}.row:last-child{border:0}.row b{color:var(--cream)}
+.usecase{display:grid;grid-template-columns:repeat(2,1fr);gap:15px;margin-top:40px}
+.case{padding:26px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(145deg,#17251a,#111b14)}
+.case-label{font-size:10px;color:var(--soil2);font-weight:800;letter-spacing:.12em;text-transform:uppercase}.case h3{margin:8px 0}.case p{color:#9ca79b;font-size:13px}
+.cta{padding:85px 0}.cta-box{position:relative;overflow:hidden;text-align:center;border-radius:25px;padding:62px 25px;background:
+radial-gradient(circle at 50% 0%,rgba(165,199,110,.16),transparent 45%),
+linear-gradient(145deg,#1a2b1d,#4a3222);border:1px solid rgba(165,199,110,.2);box-shadow:var(--shadow)}
+.cta h2{font-size:clamp(32px,4vw,52px);margin:auto;max-width:760px}.cta p{color:#c2c4ae;max-width:650px;margin:15px auto 25px}
+footer{padding:35px 0;border-top:1px solid var(--line);color:#7f8b80;font-size:12px}
+.footer-inner{display:flex;justify-content:space-between;gap:20px;align-items:center}.brandline{color:#c4cec0}.brandline strong{color:var(--grass2)}
+@media(max-width:900px){
+ .nav-links{display:none}.hero-grid,.process,.schedule{grid-template-columns:1fr}.hero{padding-top:65px}
+ .feature-grid{grid-template-columns:repeat(2,1fr)}.finance{grid-template-columns:repeat(2,1fr)}
+ .mockup{max-width:720px;margin:auto}.cards{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:600px){
+ .hero h1{font-size:43px}.lead{font-size:16px}.section{padding:75px 0}
+ .feature-grid,.usecase,.accounting{grid-template-columns:1fr}.finance{grid-template-columns:1fr 1fr}
+ .nav .btn{display:none}.hero-actions .btn{width:100%}.footer-inner{flex-direction:column;align-items:flex-start}
+ .mockup{padding:8px}.dash{padding:11px}.cards{gap:6px}.card{padding:8px}.card b{font-size:13px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="container nav-inner">
+    <a class="logo" href="#">
+      <div class="logo-mark">🌱</div>
+      <div>AgroFlow<small>by LadangWohIjo</small></div>
+    </a>
+    <div class="nav-links">
+      <a href="#fitur">Fitur</a><a href="#alur">Alur Kerja</a><a href="#hst">Jadwal HST</a><a href="#keuangan">Keuangan</a><a href="#roadmap">Roadmap</a>
+    </div>
+    <a href="#mulai" class="btn btn-primary">Pelajari Sistem →</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="container hero-grid">
+    <div>
+      <div class="badge"><span class="dot"></span> Platform manajemen greenhouse & pertanian</div>
+      <h1>Kelola kebun dengan data. <span>Hitung hasilnya.</span></h1>
+      <p class="lead">AgroFlow membantu pemilik dan pengelola greenhouse mencatat modal, hutang, biaya budidaya, jadwal kegiatan berdasarkan HST, panen, penjualan, HPP hingga laba dalam satu alur yang saling terhubung.</p>
+      <div class="hero-actions">
+        <a href="#fitur" class="btn btn-primary">Lihat Fitur Lengkap →</a>
+        <a href="#alur" class="btn btn-ghost">Lihat Cara Kerja</a>
+      </div>
+      <p class="hero-note">Dikembangkan oleh <strong>LadangWohIjo</strong> berdasarkan kebutuhan operasional budidaya greenhouse nyata.</p>
+    </div>
+
+    <div class="mockup">
+      <div class="window">
+        <div class="window-top"><i></i><i></i><i></i><span style="margin-left:auto;font-size:9px;color:#667267">agroflow.local/dashboard</span></div>
+        <div class="dash">
+          <div class="dash-head"><div><div class="dash-title">Dashboard Kebun</div><div class="dash-sub">Ringkasan seluruh unit & musim</div></div><div class="select">Musim 2026 ▾</div></div>
+          <div class="cards">
+            <div class="card"><small>Modal</small><b>Rp225 jt</b><span class="up">↗ aktif</span></div>
+            <div class="card"><small>Biaya</small><b>Rp84 jt</b><span class="up">32 transaksi</span></div>
+            <div class="card"><small>Panen</small><b>1.250</b><span class="up">tanaman</span></div>
+            <div class="card"><small>Estimasi Laba</small><b>Rp46 jt</b><span class="up">+18,4%</span></div>
+          </div>
+          <div class="chart"><span class="chart-label">Biaya vs Pendapatan per minggu</span><div class="chart-line"></div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:9px">
+            <div class="card"><small>Aktivitas Hari Ini</small><b style="font-size:12px">Pemupukan — HST 32</b></div>
+            <div class="card"><small>Status Musim</small><b style="font-size:12px;color:#91bc70">Budidaya Aktif</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section class="section alt" id="fitur">
+  <div class="container">
+    <div class="eyebrow">Satu sistem, satu sumber data</div>
+    <h2>Dari catatan kebun menjadi informasi bisnis yang bisa dipakai mengambil keputusan.</h2>
+    <p class="section-intro">Tidak lagi memisahkan catatan di buku, spreadsheet, nota belanja, atau percakapan WhatsApp. Setiap aktivitas bisa dikaitkan dengan greenhouse dan musim tanam sehingga biaya, hasil dan laba dapat ditelusuri kembali.</p>
+
+    <div class="feature-grid">
+      <article class="feature"><div class="icon">🏡</div><h3>Greenhouse & Lahan</h3><p>Kelola beberapa unit seperti GH-A, GH-B dan seterusnya. Simpan ukuran, kapasitas, status, lokasi, aset dan informasi dasar masing-masing unit.</p></article>
+      <article class="feature"><div class="icon">🌱</div><h3>Musim Tanam</h3><p>Setiap musim menjadi pusat pencatatan budidaya. Tentukan komoditas, varietas, jumlah tanaman, tanggal tanam, target panen dan greenhouse yang digunakan.</p></article>
+      <article class="feature"><div class="icon">📅</div><h3>Jadwal Berbasis HST</h3><p>Buat SOP kegiatan berdasarkan Hari Setelah Tanam: pemupukan, penyiraman, pruning, seleksi buah, pengendalian hama, pengaturan lingkungan dan panen.</p></article>
+      <article class="feature"><div class="icon">✓</div><h3>Realisasi Aktivitas</h3><p>Bedakan antara rencana dan pekerjaan yang benar-benar dilakukan. Catat tanggal aktual, pelaksana, biaya, volume, hasil dan catatan lapangan.</p></article>
+      <article class="feature"><div class="icon">💰</div><h3>Modal & Investasi</h3><p>Pisahkan modal pembangunan greenhouse dan pembelian aset dari biaya operasional musim. Dengan begitu investasi jangka panjang tidak tercampur dengan biaya produksi.</p></article>
+      <article class="feature"><div class="icon">🧾</div><h3>Biaya & Nota</h3><p>Catat pembelian pupuk, nutrisi, benih, media, listrik, tenaga kerja, perawatan dan biaya lain. Lampirkan nota atau bukti transaksi bila diperlukan.</p></article>
+      <article class="feature"><div class="icon">📦</div><h3>Panen & Produksi</h3><p>Catat jumlah tanaman produktif, jumlah buah, berat panen, grade, kualitas dan hasil produksi berdasarkan greenhouse maupun musim.</p></article>
+      <article class="feature"><div class="icon">🛒</div><h3>Penjualan</h3><p>Kelola transaksi penjualan hasil panen, pelanggan, volume, harga, total omzet, pembayaran dan status transaksi untuk mendapatkan angka pendapatan yang nyata.</p></article>
+      <article class="feature"><div class="icon">📈</div><h3>HPP & Laba</h3><p>Hitung biaya produksi, HPP per kilogram atau unit, omzet, laba kotor dan indikator profitabilitas berdasarkan data aktual musim tanam.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="alur">
+  <div class="container">
+    <div class="eyebrow">Alur kerja</div>
+    <h2>Data mengalir dari kebun sampai menjadi laporan keuntungan.</h2>
+    <p class="section-intro">Struktur sistem dirancang mengikuti cara kerja bisnis budidaya: unit kebun → musim → kegiatan → biaya → produksi → penjualan → hasil.</p>
+
+    <div class="process">
+      <div class="steps">
+        <div class="step"><div class="num">01</div><div><h3>Bangun struktur kebun</h3><p>Daftarkan perusahaan, greenhouse/lahan, aset dan informasi dasar unit produksi.</p></div></div>
+        <div class="step"><div class="num">02</div><div><h3>Buat musim tanam</h3><p>Pilih greenhouse, komoditas, varietas, jumlah tanaman dan tanggal tanam.</p></div></div>
+        <div class="step"><div class="num">03</div><div><h3>Jalankan jadwal HST</h3><p>Sistem menampilkan kegiatan sesuai umur tanaman dan SOP yang telah disiapkan.</p></div></div>
+        <div class="step"><div class="num">04</div><div><h3>Catat realisasi & biaya</h3><p>Setiap pekerjaan dan pengeluaran aktual dicatat, termasuk aktivitas di luar jadwal.</p></div></div>
+        <div class="step"><div class="num">05</div><div><h3>Catat panen & penjualan</h3><p>Produksi dikonversi menjadi data penjualan sehingga omzet dapat dibandingkan dengan biaya.</p></div></div>
+        <div class="step"><div class="num">06</div><div><h3>Analisis HPP & laba</h3><p>Manajemen dapat melihat apakah sebuah musim benar-benar menghasilkan keuntungan.</p></div></div>
+      </div>
+      <div class="flow">
+        <div class="eyebrow">Business flow</div>
+        <div class="flow-row">
+          <div class="pill">Modal</div><span class="arrow">→</span><div class="pill">Greenhouse</div><span class="arrow">→</span><div class="pill">Musim</div>
+        </div>
+        <div style="height:16px"></div>
+        <div class="flow-row">
+          <div class="pill">Jadwal HST</div><span class="arrow">→</span><div class="pill">Aktivitas</div><span class="arrow">→</span><div class="pill">Biaya</div>
+        </div>
+        <div style="height:16px"></div>
+        <div class="flow-row">
+          <div class="pill">Panen</div><span class="arrow">→</span><div class="pill">Penjualan</div><span class="arrow">→</span><div class="pill">HPP</div><span class="arrow">→</span><div class="pill">Laba</div>
+        </div>
+        <p style="font-size:12px;color:#929e91;margin-top:24px">Dengan hubungan data yang jelas, pengguna dapat menelusuri dari angka laba kembali ke musim, biaya, aktivitas, bahkan transaksi yang membentuk angka tersebut.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt" id="hst">
+  <div class="container">
+    <div class="eyebrow">Budidaya berbasis HST</div>
+    <h2>Rencana budidaya tidak berhenti sebagai daftar tugas.</h2>
+    <p class="section-intro">Jadwal dapat dijadikan SOP yang kemudian dibandingkan dengan realisasi di lapangan. Sistem bisa menunjukkan kegiatan yang sudah selesai, tertunda, atau berbeda dari rencana.</p>
+
+    <div class="schedule">
+      <div class="timeline">
+        <div class="t-item"><strong>HST 00</strong><h4>Persiapan & Tanam</h4><p>Media, instalasi, bibit, pencatatan populasi awal dan kondisi greenhouse.</p></div>
+        <div class="t-item"><strong>HST 07–21</strong><h4>Pertumbuhan Vegetatif</h4><p>Pemeliharaan, nutrisi, pengaturan lingkungan dan monitoring kondisi tanaman.</p></div>
+        <div class="t-item"><strong>HST 22–40</strong><h4>Pembentukan Tanaman & Buah</h4><p>Pruning, seleksi, penyerbukan, pengikatan dan kegiatan budidaya sesuai SOP.</p></div>
+        <div class="t-item"><strong>HST 41–60</strong><h4>Pembesaran & Pematangan</h4><p>Pengaturan nutrisi, air, lingkungan, kualitas buah dan persiapan panen.</p></div>
+        <div class="t-item"><strong>HST 60+</strong><h4>Panen & Evaluasi</h4><p>Catat hasil produksi, penjualan, biaya akhir dan performa musim.</p></div>
+      </div>
+      <div class="schedule-panel">
+        <div class="panel-head"><strong>Aktivitas Musim — Contoh</strong><span class="status">● 8 selesai</span></div>
+        <table class="table">
+          <thead><tr><th>HST</th><th>Aktivitas</th><th>Rencana</th><th>Status</th></tr></thead>
+          <tbody>
+            <tr><td>07</td><td>Pemupukan</td><td>07/08/26</td><td class="status">Selesai</td></tr>
+            <tr><td>14</td><td>Perawatan tanaman</td><td>14/08/26</td><td class="status">Selesai</td></tr>
+            <tr><td>28</td><td>Seleksi buah</td><td>28/08/26</td><td class="status">Selesai</td></tr>
+            <tr><td>35</td><td>Monitoring kualitas</td><td>04/09/26</td><td class="status warn">Terjadwal</td></tr>
+            <tr><td>45</td><td>Evaluasi nutrisi</td><td>14/09/26</td><td class="status warn">Terjadwal</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="keuangan">
+  <div class="container">
+    <div class="eyebrow">Keuangan budidaya</div>
+    <h2>Ketahui uang masuk, uang keluar, dan biaya sebenarnya dari setiap musim.</h2>
+    <p class="section-intro">Pencatatan keuangan dibuat agar investasi pembangunan greenhouse tidak tercampur dengan biaya produksi. Biaya juga dapat ditautkan ke perusahaan, greenhouse atau musim tertentu.</p>
+
+    <div class="finance">
+      <div class="money"><small>Modal / Investasi</small><b>Rp225 jt</b><span>aset & pembangunan</span></div>
+      <div class="money"><small>Biaya Produksi</small><b>Rp84 jt</b><span>musim berjalan</span></div>
+      <div class="money"><small>Omzet</small><b>Rp130 jt</b><span>hasil penjualan</span></div>
+      <div class="money"><small>Laba</small><b>Rp46 jt</b><span>setelah biaya tercatat</span></div>
+    </div>
+
+    <div class="accounting">
+      <div class="account"><h3>Biaya yang bisa dicatat</h3><div class="row"><span>Benih & bibit</span><b>Operasional</b></div><div class="row"><span>Pupuk & nutrisi</span><b>Operasional</b></div><div class="row"><span>Tenaga kerja</span><b>Operasional</b></div><div class="row"><span>Listrik & air</span><b>Operasional</b></div><div class="row"><span>Perbaikan greenhouse</span><b>Operasional/Aset</b></div></div>
+      <div class="account"><h3>Analisis per unit</h3><div class="row"><span>GH-A — Musim 01</span><b>Rp84 jt</b></div><div class="row"><span>GH-B — Musim 01</span><b>Rp76 jt</b></div><div class="row"><span>HPP rata-rata</span><b>Rp18.400/kg</b></div><div class="row"><span>Margin</span><b>35,4%</b></div><div class="row"><span>Status</span><b style="color:#91bc70">Menguntungkan</b></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="eyebrow">Contoh penggunaan</div>
+    <h2>Satu platform untuk melihat kebun sebagai operasional sekaligus bisnis.</h2>
+    <div class="usecase">
+      <article class="case"><div class="case-label">Contoh — GH-A</div><h3>Musim Melon Premium</h3><p>Pengelola dapat melihat tanggal tanam, umur tanaman saat ini, jadwal HST, biaya pupuk, tenaga kerja, jumlah tanaman, hasil panen per grade, penjualan dan laba musim tersebut.</p></article>
+      <article class="case"><div class="case-label">Contoh — GH-B</div><h3>Musim Berikutnya</h3><p>Data musim sebelumnya dapat menjadi bahan evaluasi: berapa biaya per tanaman, HPP per kg, produktivitas, omzet dan aktivitas apa yang paling banyak memengaruhi biaya.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="roadmap">
+  <div class="container">
+    <div class="eyebrow">Dikembangkan oleh LadangWohIjo</div>
+    <h2>Dibangun dari kebutuhan lapangan, lalu disiapkan untuk berkembang.</h2>
+    <p class="section-intro">AgroFlow dirancang sebagai fondasi manajemen pertanian yang dapat berkembang dari pencatatan operasional menuju ekosistem pertanian digital.</p>
+    <div class="feature-grid">
+      <article class="feature"><div class="icon">📱</div><h3>Web Responsif & PWA</h3><p>Dirancang agar nyaman digunakan melalui komputer maupun smartphone saat berada di kantor atau langsung di area greenhouse.</p></article>
+      <article class="feature"><div class="icon">👥</div><h3>Multi User</h3><p>Struktur peran dapat memisahkan akses pemilik, manajer, supervisor, pekerja dan bagian keuangan.</p></article>
+      <article class="feature"><div class="icon">🔐</div><h3>Siap Multi Perusahaan</h3><p>Arsitektur dapat dikembangkan menjadi platform SaaS sehingga satu sistem dapat digunakan oleh banyak perusahaan dengan data yang terisolasi.</p></article>
+      <article class="feature"><div class="icon">📊</div><h3>Dashboard & Laporan</h3><p>Ringkasan biaya, produksi, penjualan, HPP dan profit dapat disajikan dari tingkat musim sampai keseluruhan perusahaan.</p></article>
+      <article class="feature"><div class="icon">🤖</div><h3>Integrasi IoT</h3><p>Roadmap dapat menghubungkan data sensor greenhouse seperti pH, TDS, suhu, kelembapan dan perangkat otomatisasi ke sistem manajemen.</p></article>
+      <article class="feature"><div class="icon">⚙️</div><h3>Otomatisasi Bertahap</h3><p>Pengembangan berikutnya dapat mencakup notifikasi, rekomendasi tindakan, sinkronisasi data lapangan dan integrasi perangkat seperti ESP32.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="cta" id="mulai">
+  <div class="container">
+    <div class="cta-box">
+      <div class="eyebrow">AgroFlow × LadangWohIjo</div>
+      <h2>Karena pertanian modern bukan hanya soal menanam, tetapi juga mengelola.</h2>
+      <p>Catat prosesnya. Pahami biayanya. Ukur hasilnya. Evaluasi musimnya. Bangun keputusan berikutnya berdasarkan data.</p>
+      <a href="#fitur" class="btn btn-primary">Jelajahi Platform →</a>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container footer-inner">
+    <div class="brandline">© 2026 <strong>AgroFlow</strong> — Dikembangkan oleh <strong>LadangWohIjo</strong>.</div>
+    <div>Manajemen Greenhouse & Pertanian Digital</div>
+  </div>
+</footer>
+
+</body>
+</html>
