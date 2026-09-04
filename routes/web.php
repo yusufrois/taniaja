@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\LandingController;
+
 use App\Livewire\Auth\ForgotPassword;
 use App\Livewire\Auth\Login;
 use App\Livewire\Auth\RegisterCompany;
@@ -41,9 +43,18 @@ use Illuminate\Support\Facades\Route;
  * make sure that class of gap can't happen again).
  */
 
-Route::get('/', function () {
-    return redirect()->route(Auth::check() ? 'dashboard' : 'login');
-});
+// =============================================================================
+// [1] LANDING PAGE
+// Scope: Halaman publik — tidak memerlukan autentikasi.
+// Layout: resources/views/layouts/landing.blade.php
+// =============================================================================
+
+Route::get('/', [LandingController::class, 'index'])->name('landing');
+
+// =============================================================================
+// [2] AUTH — Guest only (login, register, forgot/reset password)
+// Scope: Halaman autentikasi — hanya bisa diakses saat BELUM login.
+// =============================================================================
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', Login::class)->name('login');
@@ -52,17 +63,25 @@ Route::middleware('guest')->group(function () {
     Route::get('/reset-password/{token}', ResetPassword::class)->name('password.reset');
 });
 
+// =============================================================================
+// [3] STORE
+// Scope: Halaman toko/e-commerce publik — dikerjakan di sesi terpisah.
+// Prefix rencana: /store/...
+// =============================================================================
+
+// TODO: Route store akan ditambahkan di sini.
+
+// =============================================================================
+// [4] APP / ADMIN
+// Scope: Aplikasi internal — wajib login (middleware auth).
+// Semua nama route diprefix 'web.' agar tidak bentrok dengan route API
+// di routes/api.php yang menggunakan Route::apiResource (tanpa prefix nama).
+// =============================================================================
+
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
 
-    /*
-     * Route names prefixed 'web.' — these MUST NOT match the
-     * auto-generated names from Route::apiResource(...) in
-     * routes/api.php (e.g. 'greenhouses.index'), or Laravel's route()
-     * helper resolves to whichever route was registered, which turned
-     * out to be the /api/v1/... one — confirmed via a rendered
-     * <a href> pointing at the API instead of the web page.
-     */
+    // --- Master Data ---
     Route::get('/greenhouses', GreenhouseManage::class)->name('web.greenhouses');
     Route::get('/crops', CropManage::class)->name('web.crops');
     Route::get('/varieties', VarietyManage::class)->name('web.varieties');
@@ -71,16 +90,23 @@ Route::middleware('auth')->group(function () {
     Route::get('/grades', GradeManage::class)->name('web.grades');
     Route::get('/expense-categories', ExpenseCategoryManage::class)->name('web.expense-categories');
     Route::get('/asset-categories', AssetCategoryManage::class)->name('web.asset-categories');
+
+    // --- Musim Tanam ---
     Route::get('/seasons', SeasonManage::class)->name('web.seasons');
     Route::get('/seasons/{season}', SeasonDetail::class)->name('web.seasons.detail');
+
+    // --- Keuangan ---
     Route::get('/expenses', ExpenseManage::class)->name('web.expenses');
     Route::get('/chart-of-accounts', ChartOfAccountManage::class)->name('web.chart-of-accounts');
     Route::get('/capital', CapitalManage::class)->name('web.capital');
     Route::get('/debts', DebtManage::class)->name('web.debts');
     Route::get('/assets', AssetManage::class)->name('web.assets');
+
+    // --- Laporan & Pengaturan ---
     Route::get('/reports', ReportManage::class)->name('web.reports');
     Route::get('/settings/modules', ModuleToggle::class)->name('web.settings.modules');
 
+    // --- Logout ---
     Route::post('/logout', function () {
         Auth::logout();
         session()->invalidate();
