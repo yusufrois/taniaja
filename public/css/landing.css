@@ -110,6 +110,11 @@ a {
     color: var(--grass2);
 }
 
+.nav-links a.active {
+    color: var(--grass2);
+    font-weight: 700;
+}
+
 /* ---- Buttons ---- */
 .btn {
     display: inline-flex;
@@ -810,5 +815,390 @@ footer {
 
     .card b {
         font-size: 13px;
+    }
+}
+
+/* ============================================================
+   Halaman Tambahan — Tentang, Blog, Kontak
+   ============================================================ */
+
+/* ---- Page Hero (header subhalaman) ---- */
+.page-hero {
+    padding: 72px 0 60px;
+    text-align: center;
+    border-bottom: 1px solid var(--line);
+    position: relative;
+}
+
+.page-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%, rgba(120, 168, 90, .1), transparent 55%);
+    pointer-events: none;
+}
+
+.page-hero .eyebrow {
+    margin-bottom: 16px;
+}
+
+.page-hero h1 {
+    font-size: clamp(32px, 5vw, 58px);
+    line-height: 1.08;
+    letter-spacing: -.045em;
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.page-hero p {
+    color: var(--muted);
+    max-width: 580px;
+    margin: 18px auto 0;
+    font-size: 17px;
+}
+
+/* ---- About Page ---- */
+.about-lead {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+    margin-top: 48px;
+}
+
+.about-lead h2 {
+    font-size: clamp(26px, 3.5vw, 40px);
+    line-height: 1.15;
+    letter-spacing: -.04em;
+}
+
+.about-lead p {
+    color: var(--muted);
+    margin-top: 16px;
+    font-size: 15px;
+}
+
+.about-lead p + p {
+    margin-top: 12px;
+}
+
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+    margin-top: 48px;
+}
+
+.stat {
+    text-align: center;
+    padding: 28px 20px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(25, 40, 29, .8), rgba(16, 27, 20, .8));
+}
+
+.stat-num {
+    font-size: 42px;
+    font-weight: 800;
+    color: var(--grass2);
+    letter-spacing: -.04em;
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 13px;
+    color: var(--muted);
+    margin-top: 8px;
+}
+
+.vision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.vision-card {
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    background: linear-gradient(145deg, rgba(25, 40, 29, .9), rgba(16, 27, 20, .9));
+}
+
+.vision-card .icon {
+    margin-bottom: 16px;
+}
+
+.vision-card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+.vision-card p {
+    font-size: 13px;
+    color: #9faa9e;
+    line-height: 1.7;
+}
+
+.value-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 40px;
+}
+
+.value-item {
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: rgba(18, 31, 21, .6);
+}
+
+.value-item h4 {
+    font-size: 15px;
+    margin-bottom: 8px;
+    color: var(--grass2);
+}
+
+.value-item p {
+    font-size: 12px;
+    color: #9aaa99;
+}
+
+/* ---- Blog Page ---- */
+.blog-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 42px;
+}
+
+.blog-card {
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    overflow: hidden;
+    background: linear-gradient(145deg, #17251a, #111b14);
+    transition: transform .2s, border-color .2s;
+    position: relative;
+}
+
+.blog-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(165, 199, 110, .3);
+}
+
+.blog-thumb {
+    height: 180px;
+    background: linear-gradient(135deg, rgba(65, 109, 66, .4), rgba(107, 73, 49, .3));
+    display: grid;
+    place-items: center;
+    font-size: 48px;
+    border-bottom: 1px solid var(--line);
+}
+
+.blog-body {
+    padding: 22px;
+}
+
+.blog-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(120, 168, 90, .15);
+    border: 1px solid rgba(165, 199, 110, .2);
+    color: var(--grass2);
+    font-size: 11px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.blog-card h3 {
+    font-size: 16px;
+    line-height: 1.4;
+    margin-bottom: 10px;
+}
+
+.blog-card p {
+    font-size: 13px;
+    color: #9faa9e;
+    line-height: 1.65;
+}
+
+.blog-meta {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--line);
+    font-size: 11px;
+    color: #7a877a;
+}
+
+.soon-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(107, 73, 49, .8);
+    border: 1px solid rgba(139, 97, 64, .4);
+    color: #f4dfc6;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.blog-empty {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--muted);
+}
+
+.blog-empty .icon {
+    width: 64px;
+    height: 64px;
+    font-size: 28px;
+    margin: 0 auto 20px;
+    background: rgba(120, 168, 90, .1);
+}
+
+/* ---- Contact Page ---- */
+.contact-grid {
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 50px;
+    margin-top: 48px;
+    align-items: start;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 18px;
+}
+
+.form-label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #c4cdc2;
+}
+
+.form-input,
+.form-textarea,
+.form-select {
+    background: rgba(18, 31, 21, .8);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 12px 14px;
+    color: var(--cream);
+    font-family: inherit;
+    font-size: 14px;
+    transition: border-color .2s;
+    outline: none;
+    width: 100%;
+}
+
+.form-input:focus,
+.form-textarea:focus,
+.form-select:focus {
+    border-color: rgba(165, 199, 110, .4);
+    background: rgba(18, 31, 21, 1);
+}
+
+.form-input::placeholder,
+.form-textarea::placeholder {
+    color: #5a6a5a;
+}
+
+.form-textarea {
+    resize: vertical;
+    min-height: 140px;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+}
+
+.contact-info-panel {
+    display: grid;
+    gap: 16px;
+}
+
+.contact-info-card {
+    padding: 22px;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: linear-gradient(145deg, rgba(25, 40, 29, .9), rgba(16, 27, 20, .9));
+    display: flex;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.contact-info-card .icon {
+    width: 40px;
+    height: 40px;
+    font-size: 18px;
+    flex-shrink: 0;
+    margin-bottom: 0;
+}
+
+.contact-info-card h4 {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.contact-info-card p,
+.contact-info-card a {
+    font-size: 13px;
+    color: var(--muted);
+}
+
+.contact-info-card a:hover {
+    color: var(--grass2);
+}
+
+/* ---- Responsive: Halaman tambahan ---- */
+@media (max-width: 900px) {
+    .about-lead,
+    .contact-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-row {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .blog-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .vision-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .value-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    .blog-grid,
+    .stats-row,
+    .value-grid,
+    .vision-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .page-hero {
+        padding: 52px 0 44px;
     }
 }

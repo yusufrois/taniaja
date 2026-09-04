@@ -1,24 +1,10 @@
 {{-- ============================================================
      Partial: _header
-     Berisi: Navbar + Hero section
+     Berisi: Navbar (via _navbar) + Hero section
      ============================================================ --}}
 
-<nav class="nav">
-    <div class="container nav-inner">
-        <a class="logo" href="#">
-            <div class="logo-mark">🌱</div>
-            <div>AgroFlow<small>by LadangWohIjo</small></div>
-        </a>
-        <div class="nav-links">
-            <a href="#fitur">Fitur</a>
-            <a href="#alur">Alur Kerja</a>
-            <a href="#hst">Jadwal HST</a>
-            <a href="#keuangan">Keuangan</a>
-            <a href="#roadmap">Roadmap</a>
-        </div>
-        <a href="#mulai" class="btn btn-primary">Pelajari Sistem →</a>
-    </div>
-</nav>
+@include('landing.partials._navbar')
+
 
 <header class="hero">
     <div class="container hero-grid">

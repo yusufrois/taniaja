@@ -53,6 +53,9 @@ use Illuminate\Support\Facades\Route;
 // =============================================================================
 
 Route::get('/', [LandingController::class, 'index'])->name('landing');
+Route::get('/tentang', [LandingController::class, 'tentang'])->name('landing.tentang');
+Route::get('/blog', [LandingController::class, 'blog'])->name('landing.blog');
+Route::get('/kontak', [LandingController::class, 'kontak'])->name('landing.kontak');
 
 // =============================================================================
 // [2] AUTH — Guest only (login, register, forgot/reset password)

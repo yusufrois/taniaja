@@ -18,4 +18,28 @@ class LandingController extends Controller
 
         return view('landing.index');
     }
+
+    /**
+     * Halaman Tentang Kami.
+     */
+    public function tentang()
+    {
+        return view('landing.tentang');
+    }
+
+    /**
+     * Halaman Blog & Artikel.
+     */
+    public function blog()
+    {
+        return view('landing.blog');
+    }
+
+    /**
+     * Halaman Kontak.
+     */
+    public function kontak()
+    {
+        return view('landing.kontak');
+    }
 }
