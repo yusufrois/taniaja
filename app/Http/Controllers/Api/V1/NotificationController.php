@@ -20,21 +20,34 @@ class NotificationController extends Controller
         return NotificationResource::collection($notifications);
     }
 
-    /**
-     * Response is explicitly wrapped in ['data' => ...] here — after
-     * extensive diagnosis (confirmed via raw response dump) this
-     * specific action's response was NOT being auto-wrapped in "data"
-     * the way every other single-JsonResource controller return in
-     * this app is, for a reason not fully pinned down. Wrapping
-     * explicitly removes the ambiguity entirely and matches what every
-     * other endpoint's response shape looks like.
-     */
     public function markRead(Notification $notification)
     {
         abort_if($notification->user_id !== auth()->id(), 404);
 
         $notification->update(['read_at' => now()]);
 
-        return response()->json(['data' => new NotificationResource($notification->fresh())]);
+        return new NotificationResource($notification);
+    }
+
+    /**
+     * Roadmap tambahan — "notifikasi bisa dihapus, karena kalau
+     * tidak akan semakin banyak". Self-only, same as every other
+     * action here — a notification is never anyone else's to delete.
+     */
+    public function destroy(Notification $notification)
+    {
+        abort_if($notification->user_id !== auth()->id(), 404);
+
+        $notification->delete();
+
+        return response()->json(['message' => 'Notifikasi dihapus.']);
+    }
+
+    /** Bulk "bersihkan yang sudah dibaca" — the actual fix for "semakin banyak" if left unchecked. */
+    public function clearRead()
+    {
+        $count = auth()->user()->notifications()->whereNotNull('read_at')->delete();
+
+        return response()->json(['message' => "{$count} notifikasi yang sudah dibaca telah dihapus."]);
     }
 }

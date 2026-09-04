@@ -75,7 +75,10 @@ class ModuleToggleTest extends TestCase
     public function test_sidebar_hides_greenhouse_and_season_links_when_budidaya_is_disabled(): void
     {
         $company = Company::factory()->create(['enabled_modules' => ['budidaya' => false]]);
-        $owner = $this->makeUserWithRole($company, 'owner', ['report.view', 'activity.view']);
+        // Owner HAS greenhouse.view/season.view here — isolates this
+        // test to the module toggle specifically as the reason the
+        // links are hidden, not a permission gap.
+        $owner = $this->makeUserWithRole($company, 'owner', ['report.view', 'activity.view', 'greenhouse.view', 'season.view']);
 
         $response = $this->actingAs($owner)->get('/dashboard');
 
@@ -92,7 +95,10 @@ class ModuleToggleTest extends TestCase
     public function test_sidebar_shows_greenhouse_and_season_links_when_budidaya_is_enabled(): void
     {
         $company = Company::factory()->create(); // default: enabled
-        $owner = $this->makeUserWithRole($company, 'owner', ['report.view', 'activity.view']);
+        // Roadmap tambahan (sidebar permission gate) — showing these
+        // links now ALSO requires the user's own role to have
+        // greenhouse.view/season.view, not just the module being on.
+        $owner = $this->makeUserWithRole($company, 'owner', ['report.view', 'activity.view', 'greenhouse.view', 'season.view']);
 
         $response = $this->actingAs($owner)->get('/dashboard');
 

@@ -164,4 +164,16 @@ class User extends Authenticatable
     {
         return $this->subordinates()->pluck('id')->push($this->id)->all();
     }
+
+    /**
+     * Roadmap tambahan — "semua atasan yang punya anak buah bisa
+     * kirim notifikasi/peringatan ke bawahannya, bukan cuma role
+     * yang punya izin user.warn penuh". Direct supervision only (not
+     * recursive down the chain) — matches teamUserIds()'s existing
+     * "doesn't recurse into subordinates' own subordinates" choice.
+     */
+    public function isSupervisorOf(User $user): bool
+    {
+        return $user->supervisor_id === $this->id;
+    }
 }

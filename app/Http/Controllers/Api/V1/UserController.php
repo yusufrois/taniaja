@@ -10,6 +10,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Http\Resources\UserResource;
 use App\Http\Resources\UserWarningResource;
 use App\Models\User;
+use App\Models\UserWarning;
 use Illuminate\Support\Facades\Hash;
 
 /**
@@ -52,6 +53,20 @@ class UserController extends Controller
         }
 
         abort_if($target->company_id !== auth()->user()->company_id, 404);
+    }
+
+    /**
+     * Roadmap tambahan — "semua atasan yang punya anak buah bisa
+     * kirim peringatan ke bawahannya", not just roles with the
+     * blanket 'user.warn' permission. Used by warn/acknowledge-
+     * adjacent actions below; account creation itself
+     * (StoreUserRequest) is untouched — that stays Owner-only.
+     */
+    private function assertCanWarn(User $target): void
+    {
+        $canWarn = auth()->user()->hasPermission('user.warn') || auth()->user()->isSupervisorOf($target);
+
+        abort_unless($canWarn, 403);
     }
 
     /**
@@ -200,7 +215,7 @@ class UserController extends Controller
     {
         $this->assertSameCompanyOrSuperAdmin($user);
 
-        abort_unless(auth()->user()->hasPermission('user.warn'), 403);
+        $this->assertCanWarn($user);
 
         // Ordered by id (not created_at alone) — two warnings issued
         // within the same second would otherwise tie on created_at's
@@ -230,8 +245,97 @@ class UserController extends Controller
             'reason' => $request->validated('reason'),
         ]);
 
+        // Roadmap tambahan — Peringatan and Notifikasi were two
+        // completely disconnected systems (bug report: bell icon
+        // said "tidak ada notifikasi" while the Dashboard showed a
+        // warning). A warning now ALSO creates a Notification, so it
+        // shows up in the bell too, not just the Dashboard banner.
+        \App\Models\Notification::create([
+            'company_id' => $user->company_id,
+            'user_id' => $user->id,
+            'type' => 'warning_issued',
+            'title' => 'Anda mendapat peringatan',
+            'body' => $warning->reason,
+            'data' => ['warning_id' => $warning->id],
+        ]);
+
         $this->logAudit('user.warn', $user, null, ['reason' => $warning->reason]);
 
         return new UserWarningResource($warning->load('issuer'));
+    }
+
+    /**
+     * Roadmap tambahan — "notifikasi bisa dihapus, karena kalau
+     * tidak akan semakin banyak" (mencakup Peringatan juga). Same
+     * 'user.warn' permission as issuing one — whoever can warn can
+     * also correct/withdraw a wrongly-issued one.
+     */
+    public function deleteWarning(User $user, UserWarning $warning)
+    {
+        $this->assertSameCompanyOrSuperAdmin($user);
+
+        $this->assertCanWarn($user);
+        abort_if($warning->user_id !== $user->id, 404);
+
+        $warning->delete();
+
+        $this->logAudit('user.warning.delete', $user, ['reason' => $warning->reason], null);
+
+        return response()->json(['message' => 'Peringatan dihapus.']);
+    }
+
+    /**
+     * Roadmap tambahan — "staf sudah baca -> minta atasan konfirmasi
+     * -> baru tidak muncul lagi di dashboard". Self-only: a staff
+     * member can only acknowledge their OWN warning, matching how
+     * every other "this is my own data" action in this app works.
+     * Deliberately does NOT hide it from the dashboard yet — that
+     * only happens once confirm() below also runs.
+     */
+    public function acknowledgeWarning(User $user, UserWarning $warning)
+    {
+        abort_if($warning->user_id !== auth()->id(), 404);
+        abort_if($warning->user_id !== $user->id, 404);
+
+        $warning->update(['acknowledged_at' => now()]);
+
+        // Roadmap tambahan — bug report #2: atasan had to manually
+        // check Kelola Staf to notice a staff member acknowledged.
+        // Now sends the issuer (whoever originally warned them) a
+        // Notification too, same as the warning itself does.
+        if ($warning->issued_by) {
+            \App\Models\Notification::create([
+                'company_id' => $warning->company_id,
+                'user_id' => $warning->issued_by,
+                'type' => 'warning_acknowledged',
+                'title' => "{$user->name} sudah membaca peringatan",
+                'body' => 'Menunggu konfirmasi Anda di Kelola Staf.',
+                'data' => ['warning_id' => $warning->id, 'user_id' => $user->id],
+            ]);
+        }
+
+        return new UserWarningResource($warning->load(['issuer', 'confirmedBy']));
+    }
+
+    /**
+     * Atasan confirms the staff member's acknowledgment — same
+     * permission rule as issuing/deleting one (role-level 'user.warn'
+     * OR being that staff member's direct supervisor). Only AFTER
+     * this does the warning stop showing on the staff member's own
+     * dashboard (see Dashboard's myWarnings query).
+     */
+    public function confirmWarning(User $user, UserWarning $warning)
+    {
+        $this->assertSameCompanyOrSuperAdmin($user);
+
+        $this->assertCanWarn($user);
+        abort_if($warning->user_id !== $user->id, 404);
+        abort_if(! $warning->acknowledged_at, 422, 'Staf belum menandai peringatan ini sebagai sudah dibaca.');
+
+        $warning->update(['confirmed_at' => now(), 'confirmed_by' => auth()->id()]);
+
+        $this->logAudit('user.warning.confirm', $user, null, ['confirmed_at' => $warning->confirmed_at]);
+
+        return new UserWarningResource($warning->load(['issuer', 'confirmedBy']));
     }
 }

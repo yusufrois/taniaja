@@ -195,6 +195,14 @@ class TaskTest extends TestCase
 
         $markRead = $this->actingAs($worker)->patchJson("/api/v1/notifications/{$notificationId}/read");
         $markRead->assertOk();
-        $this->assertNotNull($markRead->json('data.read_at'));
+        // Bukan regresi dari perubahan Notification terbaru — bug lama
+        // di test ini sendiri. Response markRead() TIDAK dibungkus
+        // {"data": {...}} (beda dari kebanyakan endpoint lain di app
+        // ini), jadi field-nya ada di level PALING ATAS. Sebelumnya
+        // "data.read_at" diam-diam nyasar ke field "data" MILIK
+        // notifikasi itu sendiri (isinya {"task_id":1}), yang memang
+        // tidak punya "read_at" — makanya selalu null, terlepas dari
+        // apakah update-nya berhasil atau tidak.
+        $this->assertNotNull($markRead->json('read_at'));
     }
 }

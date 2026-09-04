@@ -3,7 +3,6 @@
 use App\Http\Controllers\Api\V1\ActivityController;
 use App\Http\Controllers\Api\V1\ActivityTemplateController;
 use App\Http\Controllers\Api\V1\AssetController;
-use App\Http\Controllers\Api\V1\AssetCategoryController;
 use App\Http\Controllers\Api\V1\AttendanceController;
 use App\Http\Controllers\Api\V1\EmployeeController;
 use App\Http\Controllers\Api\V1\EmployeeLoanController;
@@ -63,6 +62,9 @@ Route::prefix('v1')->group(function () {
         Route::patch('users/{user}/reactivate', [UserController::class, 'reactivate']);
         Route::get('users/{user}/warnings', [UserController::class, 'warnings']);
         Route::post('users/{user}/warnings', [UserController::class, 'warn']);
+        Route::delete('users/{user}/warnings/{warning}', [UserController::class, 'deleteWarning']);
+        Route::post('users/{user}/warnings/{warning}/acknowledge', [UserController::class, 'acknowledgeWarning']);
+        Route::post('users/{user}/warnings/{warning}/confirm', [UserController::class, 'confirmWarning']);
 
         // Phase 2 — Master Data
         Route::apiResource('greenhouses', GreenhouseController::class);
@@ -97,9 +99,6 @@ Route::prefix('v1')->group(function () {
             ->parameters(['capital-transactions' => 'capital_transaction'])
             ->only(['index', 'store', 'show', 'destroy']);
         Route::apiResource('assets', AssetController::class);
-        Route::apiResource('asset-categories', AssetCategoryController::class)
-            ->parameters(['asset-categories' => 'asset_category'])
-            ->only(['index', 'store', 'destroy']);
         Route::apiResource('expenses', ExpenseController::class)->only(['index', 'store', 'show', 'destroy']);
         Route::post('expenses/{expense}/approve', [ExpenseController::class, 'approve']);
         Route::apiResource('debts', DebtController::class)->only(['index', 'store', 'show', 'destroy']);
@@ -202,6 +201,8 @@ Route::prefix('v1')->group(function () {
         Route::post('tasks/{task}/follow-up', [TaskController::class, 'followUp']);
         Route::get('notifications', [NotificationController::class, 'index']);
         Route::patch('notifications/{notification}/read', [NotificationController::class, 'markRead']);
+        Route::delete('notifications/{notification}', [NotificationController::class, 'destroy']);
+        Route::delete('notifications-read', [NotificationController::class, 'clearRead']);
         Route::post('device-tokens', [DeviceTokenController::class, 'store']);
     });
 });

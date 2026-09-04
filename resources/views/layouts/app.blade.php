@@ -41,6 +41,7 @@
             </div>
 
             <div class="flex items-center gap-2 shrink-0">
+                <livewire:notification-bell />
                 <button class="btn-secondary px-2.5 py-1.5 text-sm" title="Pengaturan (segera hadir)">⚙️</button>
 
                 <div class="flex items-center gap-2 pl-2 pr-1 py-1 rounded-full" style="background:rgba(15,32,24,.6)">
@@ -73,28 +74,34 @@
                     </a>
 
                     @if (auth()->user()->company->hasModuleEnabled('budidaya'))
+                    @can('viewAny', App\Models\Greenhouse::class)
                     <a href="{{ route('web.greenhouses') }}"
                        class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.greenhouses') ? 'active' : '' }}">
                         <span>🏡</span>
                         <span x-show="sidebarOpen" x-transition.opacity>Greenhouse</span>
                     </a>
+                    @endcan
                     @endif
 
+                    @php
+                        $dataMasterItems = collect([
+                            ['web.crops', '🌾', 'Komoditas', \App\Models\Crop::class],
+                            ['web.varieties', '🌱', 'Varietas', \App\Models\Variety::class],
+                            ['web.suppliers', '🚜', 'Supplier', \App\Models\Supplier::class],
+                            ['web.customers', '🏪', 'Customer', \App\Models\Customer::class],
+                            ['web.grades', '🏷️', 'Grade', \App\Models\Grade::class],
+                            ['web.expense-categories', '📁', 'Kategori Beban', \App\Models\ExpenseCategory::class],
+                            ['web.asset-categories', '🗂️', 'Kategori Aset', \App\Models\AssetCategory::class],
+                        ])->filter(fn ($item) => auth()->user()->can('viewAny', $item[3]));
+                    @endphp
+                    @if ($dataMasterItems->isNotEmpty())
                     <button @click="dataMasterOpen = !dataMasterOpen" x-show="sidebarOpen" x-transition.opacity
                             class="w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider lw-muted font-semibold">
                         <span>Data Master</span>
                         <span x-text="dataMasterOpen ? '▾' : '▸'"></span>
                     </button>
                     <div x-show="dataMasterOpen || !sidebarOpen" x-transition class="space-y-1.5">
-                    @foreach ([
-                        ['web.crops', '🌾', 'Komoditas'],
-                        ['web.varieties', '🌱', 'Varietas'],
-                        ['web.suppliers', '🚜', 'Supplier'],
-                        ['web.customers', '🏪', 'Customer'],
-                        ['web.grades', '🏷️', 'Grade'],
-                        ['web.expense-categories', '📁', 'Kategori Beban'],
-                        ['web.asset-categories', '🗂️', 'Kategori Aset'],
-                    ] as [$routeName, $icon, $label])
+                    @foreach ($dataMasterItems as [$routeName, $icon, $label, $modelClass])
                         <a href="{{ route($routeName) }}"
                            class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs($routeName) ? 'active' : '' }}">
                             <span>{{ $icon }}</span>
@@ -102,53 +109,77 @@
                         </a>
                     @endforeach
                     </div>
+                    @endif
 
                     @if (auth()->user()->company->hasModuleEnabled('budidaya'))
+                    @can('viewAny', App\Models\Season::class)
                     <a href="{{ route('web.seasons') }}"
                        class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.seasons') ? 'active' : '' }}">
                         <span>🌾</span>
                         <span x-show="sidebarOpen" x-transition.opacity>Musim Tanam</span>
                     </a>
+                    @endcan
                     @endif
 
+                    @if (auth()->user()->company->hasModuleEnabled('budidaya'))
+                    @can('viewAny', App\Models\Harvest::class)
+                    <a href="{{ route('web.harvests') }}"
+                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.harvests') ? 'active' : '' }}">
+                        <span>🧺</span>
+                        <span x-show="sidebarOpen" x-transition.opacity>Panen</span>
+                    </a>
+                    @endcan
+                    @endif
+
+                    @can('viewAny', App\Models\StockBatchSale::class)
+                    <a href="{{ route('web.stock') }}"
+                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.stock') ? 'active' : '' }}">
+                        <span>📦</span>
+                        <span x-show="sidebarOpen" x-transition.opacity>Stok / Gudang</span>
+                    </a>
+                    @endcan
+
+                    @php
+                        $keuanganItems = collect([
+                            ['web.chart-of-accounts', '📒', 'Bagan Akun', \App\Models\ChartOfAccount::class],
+                            ['web.expenses', '💸', 'Beban', \App\Models\Expense::class],
+                            ['web.capital', '🏦', 'Modal', \App\Models\CapitalTransaction::class],
+                            ['web.debts', '💳', 'Hutang', \App\Models\Debt::class],
+                            ['web.assets', '🏗️', 'Aset Tetap', \App\Models\Asset::class],
+                        ])->filter(fn ($item) => auth()->user()->can('viewAny', $item[3]));
+                    @endphp
+                    @if ($keuanganItems->isNotEmpty())
                     <button @click="keuanganOpen = !keuanganOpen" x-show="sidebarOpen" x-transition.opacity
                             class="w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider lw-muted font-semibold">
                         <span>Keuangan</span>
                         <span x-text="keuanganOpen ? '▾' : '▸'"></span>
                     </button>
                     <div x-show="keuanganOpen || !sidebarOpen" x-transition class="space-y-1.5">
-                    <a href="{{ route('web.chart-of-accounts') }}"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.chart-of-accounts') ? 'active' : '' }}">
-                        <span>📒</span>
-                        <span x-show="sidebarOpen" x-transition.opacity>Bagan Akun</span>
-                    </a>
-                    <a href="{{ route('web.expenses') }}"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.expenses') ? 'active' : '' }}">
-                        <span>💸</span>
-                        <span x-show="sidebarOpen" x-transition.opacity>Beban</span>
-                    </a>
-                    <a href="{{ route('web.capital') }}"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.capital') ? 'active' : '' }}">
-                        <span>🏦</span>
-                        <span x-show="sidebarOpen" x-transition.opacity>Modal</span>
-                    </a>
-                    <a href="{{ route('web.debts') }}"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.debts') ? 'active' : '' }}">
-                        <span>💳</span>
-                        <span x-show="sidebarOpen" x-transition.opacity>Hutang</span>
-                    </a>
-                    <a href="{{ route('web.assets') }}"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.assets') ? 'active' : '' }}">
-                        <span>🏗️</span>
-                        <span x-show="sidebarOpen" x-transition.opacity>Aset Tetap</span>
-                    </a>
+                    @foreach ($keuanganItems as [$routeName, $icon, $label, $modelClass])
+                        <a href="{{ route($routeName) }}"
+                           class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs($routeName) ? 'active' : '' }}">
+                            <span>{{ $icon }}</span>
+                            <span x-show="sidebarOpen" x-transition.opacity>{{ $label }}</span>
+                        </a>
+                    @endforeach
                     </div>
+                    @endif
 
+                    @if (auth()->user()->hasPermission('report.view'))
                     <a href="{{ route('web.reports') }}"
                        class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.reports') ? 'active' : '' }}">
                         <span>📈</span>
                         <span x-show="sidebarOpen" x-transition.opacity>Laporan</span>
                     </a>
+                    @endif
+
+                    @if (auth()->user()->can('viewAny', App\Models\User::class) || auth()->user()->subordinates()->exists())
+                        <a href="{{ route('web.staff') }}"
+                           class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.staff') ? 'active' : '' }}">
+                            <span>👥</span>
+                            <span x-show="sidebarOpen" x-transition.opacity>Kelola Staf</span>
+                        </a>
+                    @endif
 
                     @can('update', auth()->user()->company)
                         <a href="{{ route('web.settings.modules') }}"
@@ -194,67 +225,75 @@
                         <span>📊</span><span>Dashboard</span>
                     </a>
                     @if (auth()->user()->company->hasModuleEnabled('budidaya'))
-                    <a href="{{ route('web.greenhouses') }}"
+                    @can('viewAny', App\Models\Greenhouse::class)
+                    <a href="{{ route('web.greenhouses') }}" @click="mobileMenuOpen = false"
                        class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.greenhouses') ? 'active' : '' }}">
                         <span>🏡</span><span>Greenhouse</span>
                     </a>
+                    @endcan
                     @endif
+                    @if ($dataMasterItems->isNotEmpty())
                     <button @click="dataMasterOpen = !dataMasterOpen" class="w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider lw-muted font-semibold">
                         <span>Data Master</span>
                         <span x-text="dataMasterOpen ? '▾' : '▸'"></span>
                     </button>
                     <div x-show="dataMasterOpen" x-transition class="space-y-1.5">
-                    @foreach ([
-                        ['web.crops', '🌾', 'Komoditas'],
-                        ['web.varieties', '🌱', 'Varietas'],
-                        ['web.suppliers', '🚜', 'Supplier'],
-                        ['web.customers', '🏪', 'Customer'],
-                        ['web.grades', '🏷️', 'Grade'],
-                        ['web.expense-categories', '📁', 'Kategori Beban'],
-                        ['web.asset-categories', '🗂️', 'Kategori Aset'],
-                    ] as [$routeName, $icon, $label])
+                    @foreach ($dataMasterItems as [$routeName, $icon, $label, $modelClass])
                         <a href="{{ route($routeName) }}" @click="mobileMenuOpen = false"
                            class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs($routeName) ? 'active' : '' }}">
                             <span>{{ $icon }}</span><span>{{ $label }}</span>
                         </a>
                     @endforeach
                     </div>
+                    @endif
                     @if (auth()->user()->company->hasModuleEnabled('budidaya'))
+                    @can('viewAny', App\Models\Season::class)
                     <a href="{{ route('web.seasons') }}" @click="mobileMenuOpen = false"
                        class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.seasons') ? 'active' : '' }}">
                         <span>🌾</span><span>Musim Tanam</span>
                     </a>
+                    @endcan
                     @endif
+                    @if (auth()->user()->company->hasModuleEnabled('budidaya'))
+                    @can('viewAny', App\Models\Harvest::class)
+                    <a href="{{ route('web.harvests') }}" @click="mobileMenuOpen = false"
+                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.harvests') ? 'active' : '' }}">
+                        <span>🧺</span><span>Panen</span>
+                    </a>
+                    @endcan
+                    @endif
+                    @can('viewAny', App\Models\StockBatchSale::class)
+                    <a href="{{ route('web.stock') }}" @click="mobileMenuOpen = false"
+                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.stock') ? 'active' : '' }}">
+                        <span>📦</span><span>Stok / Gudang</span>
+                    </a>
+                    @endcan
+                    @if ($keuanganItems->isNotEmpty())
                     <button @click="keuanganOpen = !keuanganOpen" class="w-full flex items-center justify-between px-3 pt-3 pb-1 text-[10px] uppercase tracking-wider lw-muted font-semibold">
                         <span>Keuangan</span>
                         <span x-text="keuanganOpen ? '▾' : '▸'"></span>
                     </button>
                     <div x-show="keuanganOpen" x-transition class="space-y-1.5">
-                    <a href="{{ route('web.chart-of-accounts') }}" @click="mobileMenuOpen = false"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.chart-of-accounts') ? 'active' : '' }}">
-                        <span>📒</span><span>Bagan Akun</span>
-                    </a>
-                    <a href="{{ route('web.expenses') }}" @click="mobileMenuOpen = false"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.expenses') ? 'active' : '' }}">
-                        <span>💸</span><span>Beban</span>
-                    </a>
-                    <a href="{{ route('web.capital') }}" @click="mobileMenuOpen = false"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.capital') ? 'active' : '' }}">
-                        <span>🏦</span><span>Modal</span>
-                    </a>
-                    <a href="{{ route('web.debts') }}" @click="mobileMenuOpen = false"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.debts') ? 'active' : '' }}">
-                        <span>💳</span><span>Hutang</span>
-                    </a>
-                    <a href="{{ route('web.assets') }}" @click="mobileMenuOpen = false"
-                       class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.assets') ? 'active' : '' }}">
-                        <span>🏗️</span><span>Aset Tetap</span>
-                    </a>
+                    @foreach ($keuanganItems as [$routeName, $icon, $label, $modelClass])
+                        <a href="{{ route($routeName) }}" @click="mobileMenuOpen = false"
+                           class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs($routeName) ? 'active' : '' }}">
+                            <span>{{ $icon }}</span><span>{{ $label }}</span>
+                        </a>
+                    @endforeach
                     </div>
+                    @endif
+                    @if (auth()->user()->hasPermission('report.view'))
                     <a href="{{ route('web.reports') }}" @click="mobileMenuOpen = false"
                        class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.reports') ? 'active' : '' }}">
                         <span>📈</span><span>Laporan</span>
                     </a>
+                    @endif
+                    @if (auth()->user()->can('viewAny', App\Models\User::class) || auth()->user()->subordinates()->exists())
+                        <a href="{{ route('web.staff') }}" @click="mobileMenuOpen = false"
+                           class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.staff') ? 'active' : '' }}">
+                            <span>👥</span><span>Kelola Staf</span>
+                        </a>
+                    @endif
                     @can('update', auth()->user()->company)
                         <a href="{{ route('web.settings.modules') }}" @click="mobileMenuOpen = false"
                            class="tab-btn w-full !inline-flex justify-start {{ request()->routeIs('web.settings.modules') ? 'active' : '' }}">

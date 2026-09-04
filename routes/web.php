@@ -13,6 +13,8 @@ use App\Livewire\Customer\Manage as CustomerManage;
 use App\Livewire\Grade\Manage as GradeManage;
 use App\Livewire\ExpenseCategory\Manage as ExpenseCategoryManage;
 use App\Livewire\Season\Manage as SeasonManage;
+use App\Livewire\Harvest\Manage as HarvestManage;
+use App\Livewire\Stock\Manage as StockManage;
 use App\Livewire\Season\Detail as SeasonDetail;
 use App\Livewire\Expense\Manage as ExpenseManage;
 use App\Livewire\ChartOfAccount\Manage as ChartOfAccountManage;
@@ -22,6 +24,7 @@ use App\Livewire\Asset\Manage as AssetManage;
 use App\Livewire\AssetCategory\Manage as AssetCategoryManage;
 use App\Livewire\Report\Manage as ReportManage;
 use App\Livewire\Settings\ModuleToggle;
+use App\Livewire\Staff\Manage as StaffManage;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
@@ -72,6 +75,8 @@ Route::middleware('auth')->group(function () {
     Route::get('/expense-categories', ExpenseCategoryManage::class)->name('web.expense-categories');
     Route::get('/asset-categories', AssetCategoryManage::class)->name('web.asset-categories');
     Route::get('/seasons', SeasonManage::class)->name('web.seasons');
+    Route::get('/harvests', HarvestManage::class)->name('web.harvests');
+    Route::get('/stock', StockManage::class)->name('web.stock');
     Route::get('/seasons/{season}', SeasonDetail::class)->name('web.seasons.detail');
     Route::get('/expenses', ExpenseManage::class)->name('web.expenses');
     Route::get('/chart-of-accounts', ChartOfAccountManage::class)->name('web.chart-of-accounts');
@@ -80,6 +85,7 @@ Route::middleware('auth')->group(function () {
     Route::get('/assets', AssetManage::class)->name('web.assets');
     Route::get('/reports', ReportManage::class)->name('web.reports');
     Route::get('/settings/modules', ModuleToggle::class)->name('web.settings.modules');
+    Route::get('/staff', StaffManage::class)->name('web.staff');
 
     Route::post('/logout', function () {
         Auth::logout();

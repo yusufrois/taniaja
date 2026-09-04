@@ -3,6 +3,28 @@
         Selamat datang, <span class="brand">{{ auth()->user()->name }}</span> 👋
     </h1>
 
+    @if ($myWarnings->isNotEmpty())
+        <div class="glass rounded-2xl p-4 mb-6" style="border-left:3px solid #fbbf24">
+            <p class="font-semibold text-sm mb-2" style="color:#fbbf24">⚠️ Peringatan untuk Anda</p>
+            <div class="space-y-2">
+                @foreach ($myWarnings as $warning)
+                    <div class="text-xs flex items-start justify-between gap-3">
+                        <div>
+                            <p>{{ $warning->reason }}</p>
+                            <p class="lw-muted mt-0.5">{{ $warning->created_at?->translatedFormat('d M Y H:i') }}</p>
+                            @if ($warning->acknowledged_at)
+                                <p class="mt-1" style="color:#60a5fa">Menunggu konfirmasi atasan</p>
+                            @endif
+                        </div>
+                        @unless ($warning->acknowledged_at)
+                            <button wire:click="acknowledgeWarning({{ $warning->id }})" class="btn-secondary px-3 py-1 text-xs shrink-0">Sudah Baca</button>
+                        @endunless
+                    </div>
+                @endforeach
+            </div>
+        </div>
+    @endif
+
     @if ($canViewReports)
         <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8">
             <div class="glass p-4" style="border-left:3px solid #38bdf8;">

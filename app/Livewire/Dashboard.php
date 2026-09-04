@@ -44,11 +44,28 @@ class Dashboard extends Component
     public int $todayActivitiesCount = 0;
     public int $overdueActivitiesCount = 0;
 
+    /**
+     * Roadmap tambahan — a warned staff member previously had NO way
+     * to see their own warnings anywhere in the UI (only whoever
+     * issued it could see it, via Kelola Staf's 'user.warn' gate).
+     * This is the user's OWN data, so no extra permission check —
+     * everyone can see warnings issued to themselves, same as
+     * everyone can see their own payslip/attendance elsewhere.
+     */
+    public $myWarnings;
+
     public function mount(): void
     {
         $user = auth()->user();
         $this->canViewReports = $user->hasPermission('report.view');
         $this->canViewActivities = $user->hasPermission('activity.view');
+        // Roadmap tambahan — only warnings NOT YET fully confirmed by
+        // the issuing atasan appear here. Once acknowledged (staff
+        // clicks "Sudah Baca") AND confirmed (atasan approves via
+        // Kelola Staf), it stops showing — the 2-step flow is what
+        // actually keeps this from "memenuhi dashboard" long-term,
+        // not a delete.
+        $this->myWarnings = $user->warnings()->whereNull('confirmed_at')->orderByDesc('id')->limit(5)->get();
 
         if ($this->canViewReports) {
             $this->loadFinancialSummary();
@@ -136,6 +153,29 @@ class Dashboard extends Component
 
         $this->todayActivitiesCount = $schedules->filter(fn ($s) => $s->scheduled_date->isToday())->count();
         $this->overdueActivitiesCount = $schedules->filter(fn ($s) => $s->effective_status === 'overdue')->count();
+    }
+
+    /** Roadmap tambahan — "Sudah Baca" step 1 of 2; still shows until atasan confirms too. */
+    public function acknowledgeWarning(int $warningId): void
+    {
+        $warning = auth()->user()->warnings()->findOrFail($warningId);
+        $warning->update(['acknowledged_at' => now()]);
+
+        // Roadmap tambahan — bug report #2: atasan had to manually
+        // check Kelola Staf to notice a staff member acknowledged.
+        // Now sends the issuer a Notification too.
+        if ($warning->issued_by) {
+            \App\Models\Notification::create([
+                'company_id' => $warning->company_id,
+                'user_id' => $warning->issued_by,
+                'type' => 'warning_acknowledged',
+                'title' => auth()->user()->name.' sudah membaca peringatan',
+                'body' => 'Menunggu konfirmasi Anda di Kelola Staf.',
+                'data' => ['warning_id' => $warning->id, 'user_id' => auth()->id()],
+            ]);
+        }
+
+        $this->myWarnings = auth()->user()->warnings()->whereNull('confirmed_at')->orderByDesc('id')->limit(5)->get();
     }
 
     public function render()
